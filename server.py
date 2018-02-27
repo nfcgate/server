@@ -81,16 +81,10 @@ def prettyPrintProtobuf(msg, sock):
     elif mtype == "Anticol":
         mAnticol = msg.Anticol
         print """{} => {}: Anticol
-    UID:  {}
-    Hist: {}
-    ATQA: {}
-    SAK:  {}""".format(
+    CONFIG: {}""".format(
             sock.getpeername(),
             peer.getpeername(),
-            ''.join(x.encode('hex') for x in mAnticol.UID),
-            ''.join(x.encode('hex') for x in mAnticol.historical_byte),
-            ''.join(x.encode('hex') for x in mAnticol.ATQA),
-            ''.join(x.encode('hex') for x in mAnticol.SAK)
+            ''.join(x.encode('hex') for x in mAnticol.CONFIG)
         )
     elif mtype == "NFCData":
         mNfc = msg.NFCData
