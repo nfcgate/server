@@ -18,9 +18,9 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='c2c.proto',
   package='tud.seemuh.nfcgate.network.c2c',
-  serialized_pb=_b('\n\tc2c.proto\x12\x1etud.seemuh.nfcgate.network.c2c\"\x8a\x01\n\x07NFCData\x12G\n\x0b\x64\x61ta_source\x18\x01 \x02(\x0e\x32\x32.tud.seemuh.nfcgate.network.c2c.NFCData.DataSource\x12\x12\n\ndata_bytes\x18\x02 \x02(\x0c\"\"\n\nDataSource\x12\n\n\x06READER\x10\x00\x12\x08\n\x04\x43\x41RD\x10\x01\"J\n\x07\x41nticol\x12\x0b\n\x03UID\x18\x01 \x02(\x0c\x12\x17\n\x0fhistorical_byte\x18\x02 \x02(\x0c\x12\x0c\n\x04\x41TQA\x18\x03 \x02(\x0c\x12\x0b\n\x03SAK\x18\x04 \x02(\x0c\"\xa9\x02\n\x06Status\x12?\n\x04\x63ode\x18\x01 \x02(\x0e\x32\x31.tud.seemuh.nfcgate.network.c2c.Status.StatusCode\"\xdd\x01\n\nStatusCode\x12\x11\n\rKEEPALIVE_REQ\x10\x00\x12\x11\n\rKEEPALIVE_REP\x10\x01\x12\x0e\n\nCARD_FOUND\x10\x02\x12\x10\n\x0c\x43\x41RD_REMOVED\x10\x03\x12\x10\n\x0cREADER_FOUND\x10\x04\x12\x12\n\x0eREADER_REMOVED\x10\x05\x12\x0f\n\x0bNFC_NO_CONN\x10\x06\x12\x13\n\x0fINVALID_MSG_FMT\x10\x07\x12\x13\n\x0fNOT_IMPLEMENTED\x10\x08\x12\x13\n\x0fUNKNOWN_MESSAGE\x10\t\x12\x11\n\rUNKNOWN_ERROR\x10\n')
+  syntax='proto2',
+  serialized_pb=_b('\n\tc2c.proto\x12\x1etud.seemuh.nfcgate.network.c2c\"\x8a\x01\n\x07NFCData\x12G\n\x0b\x64\x61ta_source\x18\x01 \x02(\x0e\x32\x32.tud.seemuh.nfcgate.network.c2c.NFCData.DataSource\x12\x12\n\ndata_bytes\x18\x02 \x02(\x0c\"\"\n\nDataSource\x12\n\n\x06READER\x10\x00\x12\x08\n\x04\x43\x41RD\x10\x01\"\x19\n\x07\x41nticol\x12\x0e\n\x06\x43ONFIG\x18\x01 \x02(\x0c\"\xa9\x02\n\x06Status\x12?\n\x04\x63ode\x18\x01 \x02(\x0e\x32\x31.tud.seemuh.nfcgate.network.c2c.Status.StatusCode\"\xdd\x01\n\nStatusCode\x12\x11\n\rKEEPALIVE_REQ\x10\x00\x12\x11\n\rKEEPALIVE_REP\x10\x01\x12\x0e\n\nCARD_FOUND\x10\x02\x12\x10\n\x0c\x43\x41RD_REMOVED\x10\x03\x12\x10\n\x0cREADER_FOUND\x10\x04\x12\x12\n\x0eREADER_REMOVED\x10\x05\x12\x0f\n\x0bNFC_NO_CONN\x10\x06\x12\x13\n\x0fINVALID_MSG_FMT\x10\x07\x12\x13\n\x0fNOT_IMPLEMENTED\x10\x08\x12\x13\n\x0fUNKNOWN_MESSAGE\x10\t\x12\x11\n\rUNKNOWN_ERROR\x10\n')
 )
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -99,8 +99,8 @@ _STATUS_STATUSCODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=339,
-  serialized_end=560,
+  serialized_start=290,
+  serialized_end=511,
 )
 _sym_db.RegisterEnumDescriptor(_STATUS_STATUSCODE)
 
@@ -118,14 +118,14 @@ _NFCDATA = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='data_bytes', full_name='tud.seemuh.nfcgate.network.c2c.NFCData.data_bytes', index=1,
       number=2, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -135,6 +135,7 @@ _NFCDATA = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -151,33 +152,12 @@ _ANTICOL = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='UID', full_name='tud.seemuh.nfcgate.network.c2c.Anticol.UID', index=0,
+      name='CONFIG', full_name='tud.seemuh.nfcgate.network.c2c.Anticol.CONFIG', index=0,
       number=1, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='historical_byte', full_name='tud.seemuh.nfcgate.network.c2c.Anticol.historical_byte', index=1,
-      number=2, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='ATQA', full_name='tud.seemuh.nfcgate.network.c2c.Anticol.ATQA', index=2,
-      number=3, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='SAK', full_name='tud.seemuh.nfcgate.network.c2c.Anticol.SAK', index=3,
-      number=4, type=12, cpp_type=9, label=2,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -186,11 +166,12 @@ _ANTICOL = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
   serialized_start=186,
-  serialized_end=260,
+  serialized_end=211,
 )
 
 
@@ -207,7 +188,7 @@ _STATUS = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -217,11 +198,12 @@ _STATUS = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=263,
-  serialized_end=560,
+  serialized_start=214,
+  serialized_end=511,
 )
 
 _NFCDATA.fields_by_name['data_source'].enum_type = _NFCDATA_DATASOURCE
@@ -231,6 +213,7 @@ _STATUS_STATUSCODE.containing_type = _STATUS
 DESCRIPTOR.message_types_by_name['NFCData'] = _NFCDATA
 DESCRIPTOR.message_types_by_name['Anticol'] = _ANTICOL
 DESCRIPTOR.message_types_by_name['Status'] = _STATUS
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 NFCData = _reflection.GeneratedProtocolMessageType('NFCData', (_message.Message,), dict(
   DESCRIPTOR = _NFCDATA,

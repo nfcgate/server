@@ -18,9 +18,9 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='c2s.proto',
   package='tud.seemuh.nfcgate.network.c2s',
+  syntax='proto2',
   serialized_pb=_b('\n\tc2s.proto\x12\x1etud.seemuh.nfcgate.network.c2s\"\x8a\x06\n\x07Session\x12\x45\n\x06opcode\x18\x01 \x02(\x0e\x32\x35.tud.seemuh.nfcgate.network.c2s.Session.SessionOpcode\x12\x16\n\x0esession_secret\x18\x02 \x01(\t\x12X\n\x07\x65rrcode\x18\x03 \x02(\x0e\x32\x38.tud.seemuh.nfcgate.network.c2s.Session.SessionErrorCode:\rERROR_NOERROR\"\x91\x02\n\rSessionOpcode\x12\x12\n\x0eSESSION_CREATE\x10\x00\x12\x1a\n\x16SESSION_CREATE_SUCCESS\x10\x01\x12\x17\n\x13SESSION_CREATE_FAIL\x10\x02\x12\x10\n\x0cSESSION_JOIN\x10\x03\x12\x18\n\x14SESSION_JOIN_SUCCESS\x10\x04\x12\x15\n\x11SESSION_JOIN_FAIL\x10\x05\x12\x11\n\rSESSION_LEAVE\x10\x06\x12\x19\n\x15SESSION_LEAVE_SUCCESS\x10\x07\x12\x16\n\x12SESSION_LEAVE_FAIL\x10\x08\x12\x17\n\x13SESSION_PEER_JOINED\x10\t\x12\x15\n\x11SESSION_PEER_LEFT\x10\n\"\xb1\x02\n\x10SessionErrorCode\x12\x11\n\rERROR_NOERROR\x10\x00\x12\x17\n\x13\x45RROR_CREATE_UNKOWN\x10\x01\x12$\n ERROR_CREATE_ALREADY_HAS_SESSION\x10\x02\x12\x16\n\x12\x45RROR_JOIN_UNKNOWN\x10\x03\x12\x1d\n\x19\x45RROR_JOIN_UNKNOWN_SECRET\x10\x04\x12\x1b\n\x17\x45RROR_JOIN_SESSION_FULL\x10\x05\x12\"\n\x1e\x45RROR_JOIN_ALREADY_HAS_SESSION\x10\x06\x12\x17\n\x13\x45RROR_LEAVE_UNKNOWN\x10\x07\x12\x1e\n\x1a\x45RROR_LEAVE_UNKNOWN_SECRET\x10\x08\x12\x1a\n\x16\x45RROR_LEAVE_NOT_JOINED\x10\t\"\xd4\x01\n\x04\x44\x61ta\x12R\n\x07\x65rrcode\x18\x01 \x02(\x0e\x32\x32.tud.seemuh.nfcgate.network.c2s.Data.DataErrorCode:\rERROR_NOERROR\x12\x0c\n\x04\x62lob\x18\x02 \x01(\x0c\"j\n\rDataErrorCode\x12\x11\n\rERROR_NOERROR\x10\x00\x12\x11\n\rERROR_UNKNOWN\x10\x01\x12\x14\n\x10\x45RROR_NO_SESSION\x10\x02\x12\x1d\n\x19\x45RROR_TRANSMISSION_FAILED\x10\x03')
 )
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -180,21 +180,21 @@ _SESSION = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='session_secret', full_name='tud.seemuh.nfcgate.network.c2s.Session.session_secret', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='errcode', full_name='tud.seemuh.nfcgate.network.c2s.Session.errcode', index=2,
       number=3, type=14, cpp_type=8, label=2,
       has_default_value=True, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -205,6 +205,7 @@ _SESSION = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -226,14 +227,14 @@ _DATA = _descriptor.Descriptor(
       has_default_value=True, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='blob', full_name='tud.seemuh.nfcgate.network.c2s.Data.blob', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -243,6 +244,7 @@ _DATA = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
+  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -258,6 +260,7 @@ _DATA.fields_by_name['errcode'].enum_type = _DATA_DATAERRORCODE
 _DATA_DATAERRORCODE.containing_type = _DATA
 DESCRIPTOR.message_types_by_name['Session'] = _SESSION
 DESCRIPTOR.message_types_by_name['Data'] = _DATA
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Session = _reflection.GeneratedProtocolMessageType('Session', (_message.Message,), dict(
   DESCRIPTOR = _SESSION,
