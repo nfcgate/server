@@ -4,7 +4,7 @@ import socketserver
 import struct
 
 HOST = "0.0.0.0"
-PORT = 13374
+PORT = 5566
 
 
 class NFCGateClientHandler(socketserver.StreamRequestHandler):
@@ -16,13 +16,18 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
         super().setup()
 
         self.session = None
+        self.request.settimeout(60)
         print(self.client_address, "new client")
 
     def handle(self):
         super().handle()
 
         while True:
-            msg_len, session = struct.unpack("!IB", self.rfile.read(5))
+            msg_len_data = self.rfile.read(5)
+            if len(msg_len_data) < 5:
+                break
+
+            msg_len, session = struct.unpack("!IB", msg_len_data)
             print(self.client_address, "Got message of", msg_len, "bytes")
             if msg_len == 0:
                 break
@@ -65,14 +70,14 @@ class NFCGateServer(socketserver.ThreadingTCPServer):
             self.clients[session] = []
         self.clients[session].append(client)
 
-        print(self, client.client_address, "added to session", session)
+        print(client.client_address, "added to session", session)
 
     def remove_client(self, client, session):
         if session is None or session not in self.clients:
             return
 
         self.clients[session].remove(client)
-        print(self, client.client_address, "removed from session", session)
+        print(client.client_address, "removed from session", session)
 
     def send_to_clients(self, session, msg, origin):
         if session is None or session not in self.clients:
@@ -83,10 +88,10 @@ class NFCGateServer(socketserver.ThreadingTCPServer):
             if client is origin:
                 continue
 
-            data = int.to_bytes(len(msg), 4, byteorder='big') + msg
-            client.wfile.write(data)
+            client.wfile.write(int.to_bytes(len(msg), 4, byteorder='big'))
+            client.wfile.write(msg)
 
-        print(self, "Sent message to", len(self.clients[session]), "connected clients")
+        print("Sent message to", len(self.clients[session])-1, "connected clients")
 
 
 if __name__ == "__main__":
