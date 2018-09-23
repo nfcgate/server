@@ -1,15 +1,31 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python3
 
 import socketserver
 import struct
+import sys
 
 HOST = "0.0.0.0"
 PORT = 5566
 
 
+class PluginHandler:
+    def __init__(self):
+        self.plugin_list = []
+
+        for modname in sys.argv[1:]:
+            self.plugin_list.append(__import__("plugins.mod_%s" % modname, fromlist=["plugins"]))
+            print("Loaded", "mod_%s" % modname)
+
+    def filter(self, data):
+        for plugin in self.plugin_list:
+            data = plugin.handle_data(data)
+
+        return data
+
+
 class NFCGateClientHandler(socketserver.StreamRequestHandler):
-    def __init__(self, request, client_address, server):
-        super().__init__(request, client_address, server)
+    def __init__(self, request, client_address, srv):
+        super().__init__(request, client_address, srv)
         self.session = None
 
     def setup(self):
@@ -17,7 +33,7 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
 
         self.session = None
         self.request.settimeout(60)
-        print(self.client_address, "new client")
+        print(self.client_address, "connected")
 
     def handle(self):
         super().handle()
@@ -28,16 +44,12 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
                 break
 
             msg_len, session = struct.unpack("!IB", msg_len_data)
-            print(self.client_address, "Got message of", msg_len, "bytes")
-            if msg_len == 0:
-                break
-
             data = self.rfile.read(msg_len)
             print(self.client_address, "data:", bytes(data))
 
-            # no session number supplied and none set yet
-            if session == 0 and self.session is None:
-                continue
+            # no data was sent or no session number supplied and none set yet
+            if msg_len == 0 or session == 0 and self.session is None:
+                break
 
             # change in session number detected
             if self.session != session:
@@ -47,7 +59,8 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
                 self.session = session
                 self.server.add_client(self, session)
 
-            self.server.send_to_clients(self.session, data, self)
+            # allow plugins to filter data before sending it to all clients in the session
+            self.server.send_to_clients(self.session, self.server.plugins.filter(data), self)
 
     def finish(self):
         super().finish()
@@ -57,10 +70,13 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
 
 
 class NFCGateServer(socketserver.ThreadingTCPServer):
-    def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
+    def __init__(self, server_address, request_handler, bind_and_activate=True):
         self.allow_reuse_address = True
-        super().__init__(server_address, RequestHandlerClass, bind_and_activate)
+        super().__init__(server_address, request_handler, bind_and_activate)
+
         self.clients = {}
+        self.plugins = PluginHandler()
+        print("NFCGate server listening on", server_address)
 
     def add_client(self, client, session):
         if session is None:
@@ -68,16 +84,16 @@ class NFCGateServer(socketserver.ThreadingTCPServer):
 
         if session not in self.clients:
             self.clients[session] = []
-        self.clients[session].append(client)
 
-        print(client.client_address, "added to session", session)
+        self.clients[session].append(client)
+        print(client.client_address, "joined session", session)
 
     def remove_client(self, client, session):
         if session is None or session not in self.clients:
             return
 
         self.clients[session].remove(client)
-        print(client.client_address, "removed from session", session)
+        print(client.client_address, "left session", session)
 
     def send_to_clients(self, session, msg, origin):
         if session is None or session not in self.clients:
@@ -91,7 +107,7 @@ class NFCGateServer(socketserver.ThreadingTCPServer):
             client.wfile.write(int.to_bytes(len(msg), 4, byteorder='big'))
             client.wfile.write(msg)
 
-        print("Sent message to", len(self.clients[session])-1, "connected clients")
+        print("Publish reached", len(self.clients[session]) - 1, "clients")
 
 
 if __name__ == "__main__":
