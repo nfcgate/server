@@ -3,6 +3,7 @@
 import socketserver
 import struct
 import sys
+import datetime
 
 HOST = "0.0.0.0"
 PORT = 5566
@@ -13,12 +14,12 @@ class PluginHandler:
         self.plugin_list = []
 
         for modname in sys.argv[1:]:
-            self.plugin_list.append(__import__("plugins.mod_%s" % modname, fromlist=["plugins"]))
+            self.plugin_list.append((modname, __import__("plugins.mod_%s" % modname, fromlist=["plugins"])))
             print("Loaded", "mod_%s" % modname)
 
-    def filter(self, data):
-        for plugin in self.plugin_list:
-            data = plugin.handle_data(data)
+    def filter(self, log, data):
+        for modname, plugin in self.plugin_list:
+            data = plugin.handle_data(lambda *x: log(*x, tag=modname), data)
 
         return data
 
@@ -26,14 +27,16 @@ class PluginHandler:
 class NFCGateClientHandler(socketserver.StreamRequestHandler):
     def __init__(self, request, client_address, srv):
         super().__init__(request, client_address, srv)
-        self.session = None
+        
+    def log(self, *args, tag="server"):
+        self.server.log(*args, origin=self.client_address, tag=tag)
 
     def setup(self):
         super().setup()
-
+        
         self.session = None
         self.request.settimeout(60)
-        print(self.client_address, "connected")
+        self.log("server", "connected")
 
     def handle(self):
         super().handle()
@@ -45,7 +48,7 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
 
             msg_len, session = struct.unpack("!IB", msg_len_data)
             data = self.rfile.read(msg_len)
-            print(self.client_address, "data:", bytes(data))
+            self.log("server", "data:", bytes(data))
 
             # no data was sent or no session number supplied and none set yet
             if msg_len == 0 or session == 0 and self.session is None:
@@ -60,13 +63,13 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
                 self.server.add_client(self, session)
 
             # allow plugins to filter data before sending it to all clients in the session
-            self.server.send_to_clients(self.session, self.server.plugins.filter(data), self)
+            self.server.send_to_clients(self.session, self.server.plugins.filter(self.log, data), self)
 
     def finish(self):
         super().finish()
 
         self.server.remove_client(self, self.session)
-        print(self.client_address, "disconnected")
+        self.log("server", "disconnected")
 
 
 class NFCGateServer(socketserver.ThreadingTCPServer):
@@ -76,7 +79,10 @@ class NFCGateServer(socketserver.ThreadingTCPServer):
 
         self.clients = {}
         self.plugins = PluginHandler()
-        print("NFCGate server listening on", server_address)
+        self.log("NFCGate server listening on", server_address)
+        
+    def log(self, *args, origin="0", tag="server"):
+        print(datetime.datetime.now(), "["+tag+"]", origin, *args)
 
     def add_client(self, client, session):
         if session is None:
@@ -86,14 +92,14 @@ class NFCGateServer(socketserver.ThreadingTCPServer):
             self.clients[session] = []
 
         self.clients[session].append(client)
-        print(client.client_address, "joined session", session)
+        client.log("joined session", session)
 
     def remove_client(self, client, session):
         if session is None or session not in self.clients:
             return
 
         self.clients[session].remove(client)
-        print(client.client_address, "left session", session)
+        client.log("left session", session)
 
     def send_to_clients(self, session, msg, origin):
         if session is None or session not in self.clients:
@@ -107,9 +113,8 @@ class NFCGateServer(socketserver.ThreadingTCPServer):
             client.wfile.write(int.to_bytes(len(msg), 4, byteorder='big'))
             client.wfile.write(msg)
 
-        print("Publish reached", len(self.clients[session]) - 1, "clients")
+        self.log("Publish reached", len(self.clients[session]) - 1, "clients")
 
 
 if __name__ == "__main__":
-    server = NFCGateServer((HOST, PORT), NFCGateClientHandler)
-    server.serve_forever()
+    NFCGateServer((HOST, PORT), NFCGateClientHandler).serve_forever()
