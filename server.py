@@ -35,7 +35,7 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
         super().setup()
         
         self.session = None
-        self.request.settimeout(60)
+        self.request.settimeout(300)
         self.log("server", "connected")
 
     def handle(self):
