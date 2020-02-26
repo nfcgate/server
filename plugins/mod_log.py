@@ -11,7 +11,7 @@ def format_data(data):
 
     letter = "C" if nfc_data.data_source == NFCData.CARD else "R"
     initial = "(initial) " if nfc_data.data_type == NFCData.INITIAL else ""
-    return "%s: %s%s" % (letter, initial, bytes(nfc_data.data))
+    return "%s: %s%s" % (letter, initial, bytes(nfc_data.data).hex())
 
 
 def handle_data(log, data):
