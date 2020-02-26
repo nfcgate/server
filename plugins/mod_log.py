@@ -14,7 +14,7 @@ def format_data(data):
     return "%s: %s%s" % (letter, initial, bytes(nfc_data.data).hex())
 
 
-def handle_data(log, data):
+def handle_data(log, data, state):
     server_message = ServerData()
     server_message.ParseFromString(data)
 

@@ -17,9 +17,17 @@ class PluginHandler:
             self.plugin_list.append((modname, __import__("plugins.mod_%s" % modname, fromlist=["plugins"])))
             print("Loaded", "mod_%s" % modname)
 
-    def filter(self, log, data):
+    def filter(self, client, data):
         for modname, plugin in self.plugin_list:
-            data = plugin.handle_data(lambda *x: log(*x, tag=modname), data)
+            if type(data) == list:
+                first = data[0]
+            else:
+                first = data
+            first = plugin.handle_data(lambda *x: client.log(*x, tag=modname), first, client.state)
+            if type(data) == list:
+                data = [first] + data[1:]
+            else:
+                data = first
 
         return data
 
@@ -35,6 +43,7 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
         super().setup()
         
         self.session = None
+        self.state = {}
         self.request.settimeout(300)
         self.log("server", "connected")
 
@@ -67,7 +76,7 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
                 self.server.add_client(self, session)
 
             # allow plugins to filter data before sending it to all clients in the session
-            self.server.send_to_clients(self.session, self.server.plugins.filter(self.log, data), self)
+            self.server.send_to_clients(self.session, self.server.plugins.filter(self, data), self)
 
     def finish(self):
         super().finish()
@@ -105,7 +114,7 @@ class NFCGateServer(socketserver.ThreadingTCPServer):
         self.clients[session].remove(client)
         client.log("left session", session)
 
-    def send_to_clients(self, session, msg, origin):
+    def send_to_clients(self, session, msgs, origin):
         if session is None or session not in self.clients:
             return
 
@@ -114,8 +123,12 @@ class NFCGateServer(socketserver.ThreadingTCPServer):
             if client is origin:
                 continue
 
-            client.wfile.write(int.to_bytes(len(msg), 4, byteorder='big'))
-            client.wfile.write(msg)
+            if type(msgs) != list:
+                msgs = [msgs]
+
+            for msg in msgs:
+                client.wfile.write(int.to_bytes(len(msg), 4, byteorder='big'))
+                client.wfile.write(msg)
 
         self.log("Publish reached", len(self.clients[session]) - 1, "clients")
 
