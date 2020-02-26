@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import socket
 import socketserver
 import struct
 import sys
@@ -42,7 +42,11 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
         super().handle()
 
         while True:
-            msg_len_data = self.rfile.read(5)
+            try:
+                msg_len_data = self.rfile.read(5)
+            except socket.timeout:
+                self.log("server", "Timeout")
+                break
             if len(msg_len_data) < 5:
                 break
 
