@@ -6,6 +6,7 @@ import ssl
 import struct
 import datetime
 import sys
+import threading
 
 HOST = "0.0.0.0"
 PORT = 5566
@@ -45,6 +46,7 @@ class NFCGateClientHandler(socketserver.StreamRequestHandler):
         super().setup()
         
         self.session = None
+        self.write_lock = threading.Lock()
         self.state = {}
         self.request.settimeout(300)
         self.log("server", "connected")
@@ -142,9 +144,10 @@ class NFCGateServer(socketserver.ThreadingTCPServer):
             if type(msgs) != list:
                 msgs = [msgs]
 
-            for msg in msgs:
-                client.wfile.write(int.to_bytes(len(msg), 4, byteorder='big'))
-                client.wfile.write(msg)
+            with client.write_lock:
+                for msg in msgs:
+                    client.wfile.write(int.to_bytes(len(msg), 4, byteorder='big'))
+                    client.wfile.write(msg)
 
         self.log("Publish reached", len(self.clients[session]) - 1, "clients")
 
